@@ -13,7 +13,7 @@ end
 
 M = {}
 
-M.related_files = function(opts)
+M.rails_related_files = function(opts)
   local current_file = vim.fn.expand("%:p")
   local views_dir = ""
   local controller_file = ""
@@ -60,6 +60,6 @@ end
 
 return telescope.register_extension {
 	exports = {
-		related_files = M.related_files
+		rails_related_files = M.rails_related_files
 	},
 }
