@@ -36,30 +36,30 @@ M.rails_related_files = function(opts)
     views_dir = current_file:gsub("app/controllers/", "app/views/"):gsub("_controller.rb", "/*")
   end
 
-	local command = table.concat({"ls -d ", views_dir, " ", controller_file})
-	local handle = io.popen(command)
-	local result = handle:read("*a")
-	handle:close()
+  local command = table.concat({"ls -d ", views_dir, " ", controller_file})
+  local handle = io.popen(command)
+  local result = handle:read("*a")
+  handle:close()
 
-	local files = {}
-	for token in string.gmatch(result, "[^%s]+") do
-	   table.insert(files, token)
-	end
+  local files = {}
+  for token in string.gmatch(result, "[^%s]+") do
+     table.insert(files, token)
+  end
 
-	opts = opts or {}
+  opts = opts or {}
 
-	pickers.new(opts, {
-		prompt_title = "Related files",
-		finder = finders.new_table {
-			results = files
-		},
-		sorter = conf.generic_sorter(opts),
+  pickers.new(opts, {
+    prompt_title = "Related files",
+    finder = finders.new_table {
+      results = files
+    },
+    sorter = conf.generic_sorter(opts),
     previewer = conf.file_previewer(opts)
-	}):find()
+  }):find()
 end
 
 return telescope.register_extension {
-	exports = {
-		rails_related_files = M.rails_related_files
-	},
+  exports = {
+    rails_related_files = M.rails_related_files
+  },
 }

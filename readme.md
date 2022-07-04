@@ -15,3 +15,8 @@ use {
   end
 }
 ```
+
+# Attribution
+
+I got the base code of the extension from [axkirillov/telescope-changed-files](https://github.com/axkirillov/telescope-changed-files)
+and modified it to meet my needs. Thanks @axkirillov!
