@@ -6,6 +6,7 @@ local builtin = require("telescope.builtin")
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
 local previewers = require "telescope.previewers"
+local make_entry = require "telescope.make_entry"
 
 if not has_telescope then
   error('This plugin requires nvim-telescope/telescope.nvim')
@@ -13,13 +14,20 @@ end
 
 M = {}
 
+function split(s, delimiter)
+    result = {};
+    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, match);
+    end
+    return result;
+end
+
 M.rails_related_files = function(opts)
   local current_file = vim.fn.expand("%:p")
   local views_dir = ""
   local controller_file = ""
 
-  if string.find(current_file, "app/views/") or string.find(current_file, "app/controllers/") then
-  else
+  if not string.find(current_file, "app/views/") and not string.find(current_file, "app/controllers/") then
     print("No files to find")
     return false
   end
@@ -36,7 +44,7 @@ M.rails_related_files = function(opts)
     views_dir = current_file:gsub("app/controllers/", "app/views/"):gsub("_controller.rb", "/*")
   end
 
-  local command = table.concat({"ls -d ", views_dir, " ", controller_file})
+  local command = table.concat({"ls -dp ", views_dir, " ", views_dir, "*/* ", controller_file, " | egrep -v /$"})
   local handle = io.popen(command)
   local result = handle:read("*a")
   handle:close()
@@ -51,7 +59,14 @@ M.rails_related_files = function(opts)
   pickers.new(opts, {
     prompt_title = "Related files",
     finder = finders.new_table {
-      results = files
+      results = files,
+      entry_maker = function(line)
+        return make_entry.set_default_entry_mt({
+          ordinal = line,
+          display = "app/" .. split(line, "app/")[2],
+          filename = line,
+        }, opts)
+      end,
     },
     sorter = conf.generic_sorter(opts),
     previewer = conf.file_previewer(opts)
